@@ -5,7 +5,7 @@ library(tidyverse)
 library(data.table)
 
 # Set common file name start for all files to merge
-start_name <- "^fig01_perm_test_"
+start_name <- "^fig01_fully_NP_randproj_"
 
 # Get all file names with given start_name
 filenames <- list.files(path = "data", pattern = start_name, full.names = T)
@@ -49,4 +49,4 @@ if("test_stat" %in% colnames(file_1)) {
 
 # Save new data frame
 fwrite(all_data,
-       file = "data/fig01_perm_test.csv")
+       file = "data/fig01_fully_NP_randproj.csv")

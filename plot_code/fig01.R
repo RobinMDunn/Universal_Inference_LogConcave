@@ -1,5 +1,6 @@
 # Create Figure 1 in main paper.
-# Plot results from Cule et al. (2010) permutation test of
+# Plot results from Cule et al. (2010) permutation test
+# and fully nonparametric random projection universal test of
 # H_0: log-concave versus H_1: not log-concave.
 # Use two-component normal location model.
 
@@ -19,109 +20,63 @@ paper_theme <- theme_bw() +
         strip.text = element_text(size = 12),
         panel.spacing = unit(1.2, "lines"))
 
-# Function to position legend into wasted space.
-# Source: https://stackoverflow.com/questions/54438495/shift-legend-into-empty-facets-of-a-faceted-plot-in-ggplot2
-shift_legend <- function(p){
-  
-  # check if p is a valid object
-  if(!"gtable" %in% class(p)){
-    if("ggplot" %in% class(p)){
-      gp <- ggplotGrob(p) # convert to grob
-    } else {
-      message("This is neither a ggplot object nor a grob generated from ggplotGrob. Returning original plot.")
-      return(p)
-    }
-  } else {
-    gp <- p
-  }
-  
-  # check for unfilled facet panels
-  facet.panels <- grep("^panel", gp[["layout"]][["name"]])
-  empty.facet.panels <- sapply(facet.panels, function(i) "zeroGrob" %in% class(gp[["grobs"]][[i]]))
-  empty.facet.panels <- facet.panels[empty.facet.panels]
-  if(length(empty.facet.panels) == 0){
-    message("There are no unfilled facet panels to shift legend into. Returning original plot.")
-    return(p)
-  }
-  
-  # establish extent of unfilled facet panels (including any axis cells in between)
-  empty.facet.panels <- gp[["layout"]][empty.facet.panels, ]
-  empty.facet.panels <- list(min(empty.facet.panels[["t"]]), min(empty.facet.panels[["l"]]),
-                             max(empty.facet.panels[["b"]]), max(empty.facet.panels[["r"]]))
-  names(empty.facet.panels) <- c("t", "l", "b", "r")
-  
-  # extract legend & copy over to location of unfilled facet panels
-  guide.grob <- which(gp[["layout"]][["name"]] == "guide-box")
-  if(length(guide.grob) == 0){
-    message("There is no legend present. Returning original plot.")
-    return(p)
-  }
-  gp <- gtable_add_grob(x = gp,
-                        grobs = gp[["grobs"]][[guide.grob]],
-                        t = empty.facet.panels[["t"]],
-                        l = empty.facet.panels[["l"]],
-                        b = empty.facet.panels[["b"]],
-                        r = empty.facet.panels[["r"]],
-                        name = "new-guide-box")
-  
-  # squash the original guide box's row / column (whichever applicable)
-  # & empty its cell
-  guide.grob <- gp[["layout"]][guide.grob, ]
-  if(guide.grob[["l"]] == guide.grob[["r"]]){
-    gp <- gtable_squash_cols(gp, cols = guide.grob[["l"]])
-  }
-  if(guide.grob[["t"]] == guide.grob[["b"]]){
-    gp <- gtable_squash_rows(gp, rows = guide.grob[["t"]])
-  }
-  gp <- gtable_remove_grobs(gp, "guide-box")
-  
-  return(gp)
-}
-
 # Read in data
-results <- fread("data/fig01_perm_test.csv")
+perm_test <- fread("data/fig01_perm_test.csv") %>% 
+  mutate(Method = "Permutation test")
+
+fully_NP_randproj <- fread("data/fig01_fully_NP_randproj.csv") %>% 
+  mutate(Method = "Universal test (fully nonparametric, random projections)")
+
+results <- rbind(perm_test, fully_NP_randproj, fill = TRUE)
 
 # Get rejection proportion at each (d, mu_norm) combination
 reject_df <- results %>% 
-  group_by(n_obs, d, mu_norm, B) %>% 
+  group_by(Method, n_obs, d, mu_norm, B) %>% 
   dplyr::summarise(reject_prop = mean(reject),
                    sim_count = n())
 
 # Check parameters
 stopifnot(unique(results$equal_space_mu) == 0,
-          unique(results$B) == 99,
+          unique(perm_test$B) == 99,
+          unique(fully_NP_randproj$B) == 100,
           unique(results$n_obs) == 100,
-          sort(unique(results$mu_norm)) == 0:5,
+          sort(unique(results$mu_norm)) == 0:10,
           unique(reject_df$sim_count) == 200)
 
-# Plot rejection proportions at B = 99 shuffles, n = 100.
-perm_test_reject_n100 <- reject_df %>% 
-  mutate(d = factor(d, levels = 1:5, 
-                    labels = c("d = 1", "d = 2", "d = 3", "d = 4", "d = 5")),
-         log_concave = 
-           factor(mu_norm, levels = 0:5, 
-                  labels = c("Log-concave", "Log-concave", "Log-concave", 
-                             "Not log-concave", "Not log-concave", 
-                             "Not log-concave"))) %>% 
-  ggplot(aes(x = mu_norm, y = reject_prop, col = log_concave)) +
+# Plot rejection proportions
+perm_randproj_tests <- reject_df %>% 
+  mutate(Method = factor(Method,
+                         levels = c("Permutation test",
+                                    "Universal test (fully nonparametric, random projections)"),
+                         labels = c("Permutation test",
+                                    "Universal test (fully nonparametric, random projections)")),
+         d = factor(d, levels = 1:5, 
+                    labels = c("d = 1", "d = 2", "d = 3", 
+                               "d = 4", "d = 5"))) %>%
+  ggplot(aes(x = mu_norm, y = reject_prop)) +
   facet_wrap(. ~ d) +
-  geom_line(color = "darkgrey") +
-  geom_point() +
-  geom_hline(yintercept = 0.10, lty = "dashed") +
+  geom_hline(yintercept = 0.10, lty = "dashed", col = "darkgrey") +
+  geom_vline(xintercept = 2, lty = "dashed", col = "darkgrey") +
+  geom_line(aes(col = Method), alpha = 0.7) +
+  geom_point(aes(col = Method), alpha = 0.7) +
+  annotate(geom = "text", x = 1.5, y = 0.7, label = "LC", angle = 90) +
+  annotate(geom = "text", x = 2.5, y = 0.7, label = "Not LC", angle = 90) +
   labs(x = expression("||"*mu*"|| in normal location family"), 
        y = "Rejection proportion",
        col = "",
-       title = expression("Permutation test for H"[0]*
+       title = expression("Tests for H"[0]*
                             ": Log-concave vs H"[1]*": Not log-concave"),
        subtitle = expression("Normal location family f(x) = 0.5"*phi[d]*"(x)"~
-                               "+ 0.5"*phi[d]*"(x -"~mu*"). B = 99, n = 100.")) +
-  scale_color_manual(values = c("blue", "red")) +
-  paper_theme
+                               "+ 0.5"*phi[d]*"(x -"~mu*"). n = 100.")) +
+  scale_color_manual(values = c("black", "red")) +
+  scale_x_continuous(breaks = seq(0, 10, by = 2)) +
+  paper_theme +
+  theme(legend.position = "bottom") 
 
 #####################
 ##### Save plot #####
 #####################
 
-ggsave(plot = shift_legend(perm_test_reject_n100),
+ggsave(plot = perm_randproj_tests,
        filename = "plots/figure_01.pdf",
-       width = 8, height = 5)
+       width = 9, height = 5.5)
