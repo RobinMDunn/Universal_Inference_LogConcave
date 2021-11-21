@@ -1,6 +1,6 @@
 # How to use this repository
 
-This repository contains code to replicate the results of "Universal inference meets random projections: a scalable test for log-concavity" by [Robin Dunn](https://robinmdunn.github.io/), [Larry Wasserman](https://www.stat.cmu.edu/~larry/), and [Aaditya Ramdas](http://www.stat.cmu.edu/~aramdas/).
+This repository contains code to replicate the results of [Universal inference meets random projections: a scalable test for log-concavity](https://arxiv.org/abs/2111.09254) by [Robin Dunn](https://robinmdunn.github.io/), [Larry Wasserman](https://www.stat.cmu.edu/~larry/), and [Aaditya Ramdas](http://www.stat.cmu.edu/~aramdas/).
 
 ## Folder contents
 
