@@ -104,13 +104,15 @@ reject_props_unequal_spaced <- reject_df %>%
        shape = "Log-concave?",
        title = expression("Tests for H"[0]*
                             ": Log-concave vs H"[1]*": Not log-concave"),
-       subtitle = expression("Normal location family f(x) = 0.5"*phi[d]*"(x)"~
+       subtitle = expression("Normal location family f*(x) = 0.5"*phi[d]*"(x)"~
                                "+ 0.5"*phi[d]*"(x -"~mu*"). n = 100 obs. 200 sims.")) +
   scale_shape_manual(values = c(16, 4)) +
   scale_color_manual(values = c("#0047b3", "#66a3ff", "#b30000", "#ff8080", 
                                 "#5200cc", "#b380ff", "black")) +
   paper_theme +
-  theme(legend.position = "bottom") +
+  theme(legend.position = "bottom",
+        plot.title = element_text(hjust = 0.5, size = 20),
+        plot.subtitle = element_text(hjust = 0.5, size = 18)) +
   guides(colour = guide_legend(nrow = 2))
 
 # Plot rejection proportions at (||mu||, 0, ..., 0) for single dim approaches,
@@ -155,7 +157,7 @@ reject_props_unequal_zoom_onerow <- reject_df %>%
 
 ggsave(plot = reject_props_unequal_spaced,
        filename = "plots/figure_04a.pdf",
-       width = 13, height = 7)
+       width = 13, height = 8)
 
 ggsave(plot = reject_props_unequal_zoom_onerow,
        filename = "plots/figure_04b.pdf",

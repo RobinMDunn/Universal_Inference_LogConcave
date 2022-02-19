@@ -66,7 +66,7 @@ perm_randproj_tests <- reject_df %>%
        col = "",
        title = expression("Tests for H"[0]*
                             ": Log-concave vs H"[1]*": Not log-concave"),
-       subtitle = expression("Normal location family f(x) = 0.5"*phi[d]*"(x)"~
+       subtitle = expression("Normal location family f*(x) = 0.5"*phi[d]*"(x)"~
                                "+ 0.5"*phi[d]*"(x -"~mu*"). n = 100.")) +
   scale_color_manual(values = c("black", "red")) +
   scale_x_continuous(breaks = seq(0, 10, by = 2)) +

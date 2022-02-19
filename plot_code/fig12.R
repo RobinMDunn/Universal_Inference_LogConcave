@@ -81,7 +81,7 @@ perm_test_quantiles <- results %>%
        title = "Distribution of shuffled data test statistics in eight simulations.",
        subtitle =  expression(atop("Permutation test for H"[0]*
                                 ": Log-concave vs H"[1]*": Not log-concave.", 
-                                "Normal location family f(x) = 0.5"*phi[d]*"(x)"~
+                                "Normal location family f*(x) = 0.5"*phi[d]*"(x)"~
                                   "+ 0.5"*phi[d]*"(x -"~mu*")."))) +
   paper_theme
 

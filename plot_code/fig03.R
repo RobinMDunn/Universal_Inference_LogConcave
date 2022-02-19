@@ -70,7 +70,7 @@ reject_perm_true_n100 <- reject_df %>%
        shape = "Log-concave?",
        title = expression("Permutation test and true density universal test for H"[0]*
                             ": Log-concave vs H"[1]*": Not log-concave"),
-       subtitle = expression("Normal location family f(x) = 0.5"*phi[d]*"(x)"~
+       subtitle = expression("Normal location family f*(x) = 0.5"*phi[d]*"(x)"~
                                "+ 0.5"*phi[d]*"(x -"~mu*"). n = 100 obs. 200 sims.")) +
   scale_shape_manual(values = c(16, 4)) +
   scale_color_manual(values = c("black", "#5200cc")) +
@@ -84,4 +84,4 @@ reject_perm_true_n100 <- reject_df %>%
 
 ggsave(plot = reject_perm_true_n100,
        filename = "plots/figure_03.pdf",
-       width = 10, height = 6)
+       width = 10, height = 6.5)

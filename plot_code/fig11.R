@@ -54,7 +54,7 @@ perm_test_reject_B_vary <- reject_df %>%
        col = "",
        title = expression("Permutation test for H"[0]*
                             ": Log-concave vs H"[1]*": Not log-concave"),
-       subtitle = expression("Normal location family f(x) = 0.5"*phi[d]*"(x)"~
+       subtitle = expression("Normal location family f*(x) = 0.5"*phi[d]*"(x)"~
                                "+ 0.5"*phi[d]*"(x -"~mu*"). Varying B. n = 100.")) +
   scale_color_manual(values = c("blue", "red")) +
   paper_theme +
